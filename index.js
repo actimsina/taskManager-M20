@@ -1,7 +1,15 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const Task = require('./models/Task');
 
 const app = express();
 
+mongoose.connect('mongodb://127.0.0.1:27017/TaskManagerMarch2020', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log('Connected to database server');
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -12,23 +20,51 @@ app.get('/', (req, res) => {
 
 // RESTful?
 app.get('/task', (req, res) => {
-    res.send('Send all task');
+    Task.find()
+        .then((tasks) => {
+            res.json(tasks);
+        }).catch((err) => console.log(err));
 });
 app.post('/task', (req, res) => {
-    console.log(req.body.desc);
-    res.status(201).send('Should create a new task');
+    Task.create(req.body)
+        .then((task) => {
+            res.status(201).json(task);
+        }).catch((err) => console.log(err));
 });
 app.delete('/task', (req, res) => {
-    res.send('Delete all task');
+    Task.deleteMany()
+        .then((reply) => {
+            res.json(reply);
+        }).catch(err => console.log(err));
 });
 app.get('/task/:id', (req, res) => {
-    res.send(`Send a task with id ${req.params.id}`);
+    Task.findById(req.params.id)
+        .then((task) => {
+            res.json(task);
+        }).catch(err => console.log(err));
 });
 app.put('/task/:id', (req, res) => {
-    res.send(`Update the task with id ${req.params.id}`);
+    Task.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        .then((task) => {
+            res.json(task);
+        }).catch(err => console.log(err));
+
+    //     .then((task) => {
+    // Task.findById(req.params.id)
+    //         if (req.body.name) task.name = req.body.name;
+    //         task.done = req.body.done;
+    //         task.save()
+    //             .then((updatedTask) => {
+    //                 res.json(updatedTask)
+    //             }).catch((err) => console.log(err));
+    //     }).catch(err => console.log(err));
 });
+
 app.delete('/task/:id', (req, res) => {
-    res.send(`Delete a task with id ${req.params.id}`);
+    Task.findByIdAndRemove(req.params.id)
+        .then((reply) => {
+            res.json(reply);
+        }).catch(err => console.log(err));
 });
 
 app.listen(3000, () => {
