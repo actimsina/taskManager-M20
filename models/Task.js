@@ -8,7 +8,17 @@ const taskSchema = new mongoose.Schema({
     done: {
         type: Boolean,
         default: false
-    }
+    },
+    notes: [{
+        text: {
+            type: String,
+            required: true
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Task', taskSchema);
