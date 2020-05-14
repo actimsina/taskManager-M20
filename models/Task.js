@@ -1,5 +1,14 @@
 const mongoose = require('mongoose');
-
+const noteSchema = new mongoose.Schema({
+    text: {
+        type: String,
+        required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    }
+});
 const taskSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -9,16 +18,7 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    notes: [{
-        text: {
-            type: String,
-            required: true
-        },
-        date: {
-            type: Date,
-            default: Date.now
-        }
-    }]
+    notes: [noteSchema]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Task', taskSchema);
