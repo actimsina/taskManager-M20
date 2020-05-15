@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const categoryRouter = require('./routes/categoryRouter');
 const taskRouter = require('./routes/taskRouter');
 
 
@@ -20,7 +21,9 @@ app.get('/', (req, res) => {
     res.send('Welcome, to my app');
 });
 
+app.use('/api/categories', categoryRouter);
 app.use('/api/tasks', taskRouter);
+
 
 app.listen(3000, () => {
     console.log('Server is running at localhost:3000');
