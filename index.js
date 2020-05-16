@@ -5,7 +5,6 @@ require('dotenv').config();
 const categoryRouter = require('./routes/categoryRouter');
 const taskRouter = require('./routes/taskRouter');
 
-
 const app = express();
 
 mongoose.connect(process.env.DbURI, {
