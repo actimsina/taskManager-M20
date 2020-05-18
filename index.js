@@ -4,12 +4,14 @@ require('dotenv').config();
 
 const categoryRouter = require('./routes/categoryRouter');
 const taskRouter = require('./routes/taskRouter');
+const userRouter = require('./routes/userRouter');
 
 const app = express();
 
 mongoose.connect(process.env.DbURI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 }).then(() => {
     console.log('Connected to database server');
 });
@@ -21,6 +23,7 @@ app.get('/', (req, res) => {
     res.send('Welcome, to my app');
 });
 
+app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/tasks', taskRouter);
 
