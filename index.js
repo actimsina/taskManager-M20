@@ -6,6 +6,8 @@ const categoryRouter = require('./routes/categoryRouter');
 const taskRouter = require('./routes/taskRouter');
 const userRouter = require('./routes/userRouter');
 
+const auth = require('./routes/auth');
+
 const app = express();
 
 mongoose.connect(process.env.DbURI, {

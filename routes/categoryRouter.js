@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
 const Task = require('../models/Task');
+const { verifyUser, verifyManager, verifyAdmin } = require('../routes/auth');
 
 router.route('/')
-    .get((req, res, next) => {
+    .get(verifyUser, (req, res, next) => {
         Category.find()
             .then((categories) => {
                 res.json(categories);
             }).catch(next);
     })
-    .post((req, res, next) => {
+    .post(verifyUser, verifyManager, (req, res, next) => {
         Category.create(req.body)
             .then((category) => {
                 res.status(201).json(category);
             }).catch(next);
     })
-    .delete((req, res, next) => {
+    .delete(verifyUser, verifyAdmin, (req, res, next) => {
         Category.deleteMany()
             .then((reply) => {
                 res.json(reply);

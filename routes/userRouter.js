@@ -37,7 +37,7 @@ router.post('/login', (req, res, next) => {
                 .then(isMatch => {
                     if (!isMatch) {
                         let err = new Error('Password does not match!');
-                        err.status = 401;
+                        err.status = 400;
                         return next(err);
                     }
                     let payload = {
