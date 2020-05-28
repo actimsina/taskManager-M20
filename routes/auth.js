@@ -21,7 +21,7 @@ const verifyManager = (req, res, next) => {
         let err = new Error('No authentication information');
         err.status = 401;
         return next(err);
-    } else if (req.user.role === 'basic') {
+    } else if (req.user.role === 'basic' || req.user.role === 'admin') {
         let err = new Error('Forbidden!');
         err.status = 403;
         return next(err);
