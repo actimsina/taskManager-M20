@@ -11,7 +11,6 @@ const verifyUser = (req, res, next) => {
     jwt.verify(token, process.env.SECRET, (err, payload) => {
         if (err) return next(err);
         req.user = payload;
-        console.log(req.user);
         next();
     })
 }
@@ -21,7 +20,7 @@ const verifyManager = (req, res, next) => {
         let err = new Error('No authentication information');
         err.status = 401;
         return next(err);
-    } else if (req.user.role === 'basic' || req.user.role === 'admin') {
+    } else if (req.user.role === 'basic') {
         let err = new Error('Forbidden!');
         err.status = 403;
         return next(err);

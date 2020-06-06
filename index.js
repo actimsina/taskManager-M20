@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 require('dotenv').config();
 
 const categoryRouter = require('./routes/categoryRouter');
@@ -18,10 +19,11 @@ mongoose.connect(process.env.DbURI, {
     console.log('Connected to database server');
 });
 
+app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     res.send('Welcome, to my app');
 });
 
