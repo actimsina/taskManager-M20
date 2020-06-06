@@ -10,6 +10,7 @@ const userRouter = require('./routes/userRouter');
 const auth = require('./routes/auth');
 
 const app = express();
+app.use(morgan('tiny'));
 
 mongoose.connect(process.env.DbURI, {
     useNewUrlParser: true,
@@ -19,7 +20,6 @@ mongoose.connect(process.env.DbURI, {
     console.log('Connected to database server');
 });
 
-app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -28,9 +28,24 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/api/users', userRouter);
-app.use('/api/categories', categoryRouter);
-app.use('/api/tasks', taskRouter);
+app.use('/api/categories', auth.verifyUser, categoryRouter);
+app.use('/api/tasks', auth.verifyUser, taskRouter);
 
+app.use((req, res, next) => {
+    let err = new Error('Not found!');
+    err.status = 404;
+    next(err);
+});
+
+app.use((err, req, res, next) => {
+    console.log(err.stack);
+
+    res.status(err.status || 500);
+    res.json({
+        status: 'error',
+        message: err.message
+    });
+})
 app.listen(process.env.Port, () => {
     console.log(`Server is running at localhost:${process.env.Port}`);
 });

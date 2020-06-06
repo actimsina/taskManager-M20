@@ -5,19 +5,19 @@ const Task = require('../models/Task');
 const { verifyUser, verifyManager, verifyAdmin } = require('../routes/auth');
 
 router.route('/')
-    .get(verifyUser, (req, res, next) => {
+    .get((req, res, next) => {
         Category.find()
             .then((categories) => {
                 res.json(categories);
             }).catch(next);
     })
-    .post(verifyUser, verifyManager, (req, res, next) => {
+    .post((req, res, next) => {
         Category.create(req.body)
             .then((category) => {
                 res.status(201).json(category);
             }).catch(next);
     })
-    .delete(verifyUser, verifyAdmin, (req, res, next) => {
+    .delete((req, res, next) => {
         Category.deleteMany()
             .then((reply) => {
                 res.json(reply);
