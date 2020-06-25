@@ -6,6 +6,7 @@ require('dotenv').config();
 const categoryRouter = require('./routes/categoryRouter');
 const taskRouter = require('./routes/taskRouter');
 const userRouter = require('./routes/userRouter');
+const uploadRouter = require('./routes/upload');
 
 const auth = require('./routes/auth');
 
@@ -28,6 +29,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/api/users', userRouter);
+app.use('/api/upload', auth.verifyUser, uploadRouter);
 app.use('/api/categories', auth.verifyUser, categoryRouter);
 app.use('/api/tasks', auth.verifyUser, taskRouter);
 
@@ -39,7 +41,6 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     console.log(err.stack);
-
     res.status(err.status || 500);
     res.json({
         status: 'error',
