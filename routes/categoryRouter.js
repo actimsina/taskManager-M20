@@ -3,26 +3,60 @@ const router = express.Router();
 const Category = require('../models/Category');
 const Task = require('../models/Task');
 const { verifyUser, verifyManager, verifyAdmin } = require('../routes/auth');
+const User = require('../models/User');
+
+// router.route('/')
+//     .get((req, res, next) => {
+//         Category.find()
+//             .then((categories) => {
+//                 res.json(categories);
+//             }).catch(next);
+//     })
+//     .post((req, res, next) => {
+//         Category.create(req.body)
+//             .then((category) => {
+//                 res.status(201).json(category);
+//             }).catch(next);
+//     })
+//     .delete((req, res, next) => {
+//         Category.deleteMany()
+//             .then((reply) => {
+//                 res.json(reply);
+//             }).catch(next);
+//     });
 
 router.route('/')
     .get((req, res, next) => {
-        Category.find()
-            .then((categories) => {
-                res.json(categories);
-            }).catch(next);
+        User.findById(req.user.id)
+            .populate('categories')
+            .then((user) => {
+                res.json(user.categories);
+            }).catch(next)
     })
     .post((req, res, next) => {
-        Category.create(req.body)
-            .then((category) => {
-                res.status(201).json(category);
-            }).catch(next);
+        User.findById(req.user.id)
+            .then((user) => {
+                Category.create(req.body)
+                    .then((category) => {
+                        user.categories.push(category._id);
+                        user.save()
+                            .then((user) => {
+                                res.status(201).json(category);
+                            })
+                    })
+            }).catch(next)
     })
     .delete((req, res, next) => {
-        Category.deleteMany()
-            .then((reply) => {
-                res.json(reply);
-            }).catch(next);
-    });
+        User.findById(req.user.id)
+            .then((user) => {
+                Category.deleteMany({
+                    _id: { $in: user.categories }
+                }).then((reply) => {
+                    user.categories = []
+                    user.save(() => res.json(reply))
+                })
+            }).catch(next)
+    })
 
 router.route('/:id')
     .get((req, res, next) => {
@@ -39,9 +73,17 @@ router.route('/:id')
             }).catch(next)
     })
     .delete((req, res, next) => {
-        Category.deleteOne({ _id: req.params.id })
-            .then((reply) => {
-                res.json(reply)
+        User.findById(req.user.id)
+            .then((user) => {
+                user.categories = user.categories.filter((catId) => {
+                    return catId !== req.params.id
+                })
+                user.save(() => {
+                    Category.deleteOne({ _id: req.params.id })
+                        .then((reply) => {
+                            res.json(reply)
+                        })
+                })
             }).catch(next)
     });
 
