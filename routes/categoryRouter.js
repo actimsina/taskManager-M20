@@ -5,46 +5,26 @@ const Task = require('../models/Task');
 const { verifyUser, verifyManager, verifyAdmin } = require('../routes/auth');
 const User = require('../models/User');
 
-// router.route('/')
-//     .get((req, res, next) => {
-//         Category.find()
-//             .then((categories) => {
-//                 res.json(categories);
-//             }).catch(next);
-//     })
-//     .post((req, res, next) => {
-//         Category.create(req.body)
-//             .then((category) => {
-//                 res.status(201).json(category);
-//             }).catch(next);
-//     })
-//     .delete((req, res, next) => {
-//         Category.deleteMany()
-//             .then((reply) => {
-//                 res.json(reply);
-//             }).catch(next);
-//     });
-
 router.route('/')
     .get((req, res, next) => {
         User.findById(req.user.id)
             .populate('categories')
             .then((user) => {
-                res.json(user.categories);
+                res.json(user.categories)
             }).catch(next)
     })
     .post((req, res, next) => {
-        User.findById(req.user.id)
-            .then((user) => {
-                Category.create(req.body)
-                    .then((category) => {
-                        user.categories.push(category._id);
+        Category.create(req.body)
+            .then((category) => {
+                User.findById(req.user.id)
+                    .then((user) => {
+                        user.categories.push(category._id)
                         user.save()
-                            .then((user) => {
-                                res.status(201).json(category);
+                            .then(() => {
+                                res.status(201).json(category)
                             })
                     })
-            }).catch(next)
+            }).catch(next);
     })
     .delete((req, res, next) => {
         User.findById(req.user.id)
@@ -52,11 +32,47 @@ router.route('/')
                 Category.deleteMany({
                     _id: { $in: user.categories }
                 }).then((reply) => {
-                    user.categories = []
-                    user.save(() => res.json(reply))
+                    user.categories = [];
+                    user.save()
+                        .then(() => {
+                            res.json(reply);
+                        })
                 })
-            }).catch(next)
+            }).catch(next);
     })
+
+// router.route('/')
+//     .get((req, res, next) => {
+//         User.findById(req.user.id)
+//             .populate('categories')
+//             .then((user) => {
+//                 res.json(user.categories);
+//             }).catch(next)
+//     })
+//     .post((req, res, next) => {
+//         User.findById(req.user.id)
+//             .then((user) => {
+//                 Category.create(req.body)
+//                     .then((category) => {
+//                         user.categories.push(category._id);
+//                         user.save()
+//                             .then((user) => {
+//                                 res.status(201).json(category);
+//                             })
+//                     })
+//             }).catch(next)
+//     })
+//     .delete((req, res, next) => {
+//         User.findById(req.user.id)
+//             .then((user) => {
+//                 Category.deleteMany({
+//                     _id: { $in: user.categories }
+//                 }).then((reply) => {
+//                     user.categories = []
+//                     user.save(() => res.json(reply))
+//                 })
+//             }).catch(next)
+//     })
 
 router.route('/:id')
     .get((req, res, next) => {
