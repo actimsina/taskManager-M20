@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/Category');
 const Task = require('../models/Task');
-const { verifyUser, verifyManager, verifyAdmin } = require('../routes/auth');
 const User = require('../models/User');
 
 router.route('/')
@@ -40,39 +39,6 @@ router.route('/')
                 })
             }).catch(next);
     })
-
-// router.route('/')
-//     .get((req, res, next) => {
-//         User.findById(req.user.id)
-//             .populate('categories')
-//             .then((user) => {
-//                 res.json(user.categories);
-//             }).catch(next)
-//     })
-//     .post((req, res, next) => {
-//         User.findById(req.user.id)
-//             .then((user) => {
-//                 Category.create(req.body)
-//                     .then((category) => {
-//                         user.categories.push(category._id);
-//                         user.save()
-//                             .then((user) => {
-//                                 res.status(201).json(category);
-//                             })
-//                     })
-//             }).catch(next)
-//     })
-//     .delete((req, res, next) => {
-//         User.findById(req.user.id)
-//             .then((user) => {
-//                 Category.deleteMany({
-//                     _id: { $in: user.categories }
-//                 }).then((reply) => {
-//                     user.categories = []
-//                     user.save(() => res.json(reply))
-//                 })
-//             }).catch(next)
-//     })
 
 router.route('/:id')
     .get((req, res, next) => {
